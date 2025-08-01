@@ -15,8 +15,15 @@ mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('✅ Conectado a MongoDB'))
-.catch(err => console.error('❌ Error al conectar MongoDB:', err));
+.then(() => {
+  console.log('✅ Conectado a MongoDB');
+  console.log('🌍 Entorno:', process.env.NODE_ENV);
+  console.log('🔗 URI prefix:', MONGO_URI.substring(0, 30) + '...');
+})
+.catch(err => {
+  console.error('❌ Error al conectar MongoDB:', err);
+  console.error('📝 URI usado:', MONGO_URI.substring(0, 30) + '...');
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,20 +54,26 @@ app.listen(PORT, () => {
 
 app.post('/users', async (req, res) => {
   try {
+    console.log('Intentando crear usuario:', req.body);
     const newUser = new User(req.body);
     const saved = await newUser.save();
+    console.log('Usuario guardado exitosamente:', saved._id);
     res.status(201).json(saved);
   } catch (error) {
+    console.error('Error al guardar usuario:', error);
     res.status(500).json({ error: 'No se pudo guardar el usuario', details: error.message });
   }
 });
 
 app.get('/users', async (req, res) => {
   try {
+    console.log('Intentando obtener usuarios...');
     const users = await User.find();
+    console.log('Usuarios obtenidos:', users.length);
     res.json(users);
   } catch (error) {
-    res.status(500).json({ error: 'No se pudo obtener usuarios' });
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ error: 'No se pudo obtener usuarios', details: error.message });
   }
 });
 
