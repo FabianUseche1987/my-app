@@ -31,10 +31,11 @@ app.get('/', (req, res) => {
 // Endpoint de debug para verificar configuración
 app.get('/debug', (req, res) => {
   res.json({
-    message: 'Debug info',
+    message: 'Debug info v2',
     nodeEnv: process.env.NODE_ENV,
     mongoUri: process.env.MONGODB_URI ? 'Configurado ✅' : 'No configurado ❌',
-    mongoUriPrefix: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + '...' : 'N/A'
+    mongoUriPrefix: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + '...' : 'N/A',
+    timestamp: new Date().toISOString()
   });
 });
 
