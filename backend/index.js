@@ -28,6 +28,16 @@ app.get('/', (req, res) => {
   res.json({ message: 'Servidor funcionando 🚀' });
 });
 
+// Endpoint de debug para verificar configuración
+app.get('/debug', (req, res) => {
+  res.json({
+    message: 'Debug info',
+    nodeEnv: process.env.NODE_ENV,
+    mongoUri: process.env.MONGODB_URI ? 'Configurado ✅' : 'No configurado ❌',
+    mongoUriPrefix: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + '...' : 'N/A'
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
