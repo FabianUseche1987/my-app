@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Notification from "./Notification";
+import { API_ENDPOINTS } from "../config/api";
 
 const FacturaForm = () => {
   const { id, facturaId } = useParams(); // Obtener el userId y facturaId de la URL
@@ -68,7 +69,7 @@ const FacturaForm = () => {
       const fetchFactura = async () => {
         try {
           const res = await fetch(
-            `http://localhost:5000/facturas/single/${facturaId}`
+            `${API_ENDPOINTS.FACTURAS}/single/${facturaId}`
           );
           const factura = await res.json();
           setForm({
@@ -140,7 +141,7 @@ const FacturaForm = () => {
     try {
       if (facturaId) {
         // Modo edición - PUT request
-        await fetch(`http://localhost:5000/facturas/${facturaId}`, {
+        await fetch(`${API_ENDPOINTS.FACTURAS}/${facturaId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(facturaData),
@@ -152,7 +153,7 @@ const FacturaForm = () => {
         );
       } else {
         // Modo creación - POST request
-        await fetch("http://localhost:5000/facturas", {
+        await fetch(API_ENDPOINTS.FACTURAS, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(facturaData),

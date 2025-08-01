@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import FacturasTable from "./FacturasTable";
+import { API_ENDPOINTS } from "../config/api";
 
 function FacturasUsuarioTable() {
   const { id } = useParams(); // id del usuario
@@ -13,7 +14,7 @@ function FacturasUsuarioTable() {
   useEffect(() => {
     const fetchFacturas = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/facturas/${id}`);
+        const res = await fetch(`${API_ENDPOINTS.FACTURAS}/${id}`);
         const data = await res.json();
         setFacturas(data);
       } catch (error) {
@@ -23,7 +24,7 @@ function FacturasUsuarioTable() {
 
     const fetchUsuario = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/users/${id}`);
+        const res = await fetch(`${API_ENDPOINTS.USERS}/${id}`);
         const data = await res.json();
         setUser(data);
       } catch (error) {

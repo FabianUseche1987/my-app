@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ModalDelete from "./components/ModalDelete";
 import UsersTable from "./components/UsersTable";
+import { API_ENDPOINTS } from "./config/api";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ const Users = () => {
   const [editingId, setEditingId] = useState(null);
 
   const fetchUsers = async () => {
-    const res = await fetch("http://localhost:5000/users");
+    const res = await fetch(API_ENDPOINTS.USERS);
     const data = await res.json();
     setUsers(data);
   };
@@ -29,7 +30,7 @@ const Users = () => {
 
     if (editingId) {
       // Modo edición
-      await fetch(`http://localhost:5000/users/${editingId}`, {
+      await fetch(`${API_ENDPOINTS.USERS}/${editingId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +40,7 @@ const Users = () => {
       setEditingId(null); // limpiamos el modo edición
     } else {
       // Modo creación
-      await fetch("http://localhost:5000/users", {
+      await fetch(API_ENDPOINTS.USERS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,11 +58,11 @@ const Users = () => {
     setIsOpen(true);
   };
 
-  const deleteUser = async () => {
-    await fetch(`http://localhost:5000/users/${userToDelete._id}`, {
+  const handleConfirmDelete = async () => {
+    await fetch(`${API_ENDPOINTS.USERS}/${userToDelete._id}`, {
       method: "DELETE",
     });
-    setUsers((prev) => prev.filter((u) => u._id !== userToDelete._id));
+    fetchUsers();
     setIsOpen(false);
     setUserToDelete(null);
   };
@@ -138,7 +139,7 @@ const Users = () => {
         <ModalDelete
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
-          onConfirm={deleteUser}
+          onConfirm={handleConfirmDelete}
           user={userToDelete}
         />
       </div>
