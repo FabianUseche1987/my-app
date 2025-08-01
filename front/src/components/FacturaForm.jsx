@@ -191,7 +191,7 @@ const FacturaForm = () => {
       <div className="max-w-xl mx-auto p-6">
         <div className="mb-4 flex justify-end items-center">
           <button
-            onClick={() => navigate(`/usuarios/${id}/facturas`)}
+            onClick={() => navigate(`/usuarios/${id}/facturas-table`)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4"
           >
             Volver

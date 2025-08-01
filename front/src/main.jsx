@@ -4,7 +4,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Users from "./Users";
-import FacturasUsuario from "./components/FacturasUsuario";
+
+import FacturasUsuarioTable from "./components/FacturasUsuarioTable";
 import FacturaForm from "./components/FacturaForm";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -13,7 +14,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/usuarios" element={<Users />} />
-        <Route path="/usuarios/:id/facturas" element={<FacturasUsuario />} />
+
+        <Route
+          path="/usuarios/:id/facturas-table"
+          element={<FacturasUsuarioTable />}
+        />
         <Route path="/usuarios/:id/facturas/nueva" element={<FacturaForm />} />
         <Route
           path="/usuarios/:id/facturas/:facturaId/editar"
