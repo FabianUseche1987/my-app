@@ -8,6 +8,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
 
 const UsersTable = ({ users, onEdit, onDelete }) => {
   const navigate = useNavigate();
@@ -71,6 +72,66 @@ const UsersTable = ({ users, onEdit, onDelete }) => {
     [navigate, onEdit, onDelete]
   );
 
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    // Obtener los datos filtrados actuales de la tabla
+    const filteredData = table
+      .getFilteredRowModel()
+      .rows.map((row) => row.original);
+
+    // Preparar los datos para la exportación
+    const exportData = filteredData.map((user) => ({
+      ID: user._id,
+      Nombre: user.name,
+      Email: user.email,
+      Edad: user.age,
+      "Fecha Creación": user.createdAt
+        ? new Date(user.createdAt).toLocaleDateString("es-ES")
+        : "",
+      "Fecha Actualización": user.updatedAt
+        ? new Date(user.updatedAt).toLocaleDateString("es-ES")
+        : "",
+    }));
+
+    // Crear el libro de trabajo
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Usuarios");
+
+    // Ajustar el ancho de las columnas
+    const colWidths = [
+      { wch: 25 }, // ID
+      { wch: 25 }, // Nombre
+      { wch: 35 }, // Email
+      { wch: 10 }, // Edad
+      { wch: 15 }, // Fecha Creación
+      { wch: 15 }, // Fecha Actualización
+    ];
+    ws["!cols"] = colWidths;
+
+    // Agregar estilos al encabezado
+    const range = XLSX.utils.decode_range(ws["!ref"]);
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+      if (!ws[cellAddress]) continue;
+      ws[cellAddress].s = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: "EEEEEE" } },
+      };
+    }
+
+    // Generar el nombre del archivo
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split("T")[0];
+    const hora = ahora.toTimeString().split(" ")[0].replace(/:/g, "-");
+    const nombreArchivo = `usuarios_${fecha}_${hora}.xlsx`;
+
+    // Descargar el archivo
+    XLSX.writeFile(wb, nombreArchivo);
+
+    console.log(`Exportando ${exportData.length} usuarios a Excel...`);
+  };
+
   const table = useReactTable({
     data: users,
     columns,
@@ -87,6 +148,41 @@ const UsersTable = ({ users, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+      {/* Encabezado con información */}
+      <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Lista de Usuarios
+          </h3>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={exportToExcel}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-2 shadow-sm"
+              title="Exportar tabla a Excel"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span>Exportar a Excel</span>
+            </button>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Total: {users.length} usuarios
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Tabla */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

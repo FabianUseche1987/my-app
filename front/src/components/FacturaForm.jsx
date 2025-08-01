@@ -166,8 +166,8 @@ const FacturaForm = () => {
 
       // Esperar un poco más antes de redirigir para que el usuario vea la notificación
       setTimeout(() => {
-        navigate(`/usuarios/${id}/facturas`);
-      }, 2000);
+        navigate(`/usuarios/${id}/facturas-table`);
+      }, 1000);
     } catch (error) {
       console.error("Error al guardar la factura:", error);
       showNotification(

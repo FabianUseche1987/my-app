@@ -8,6 +8,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { useNavigate, useParams } from "react-router-dom";
+import * as XLSX from "xlsx";
 
 const FacturasTable = ({ facturas }) => {
   const navigate = useNavigate();
@@ -121,6 +122,71 @@ const FacturasTable = ({ facturas }) => {
     [navigate, id]
   );
 
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    // Obtener los datos filtrados actuales de la tabla
+    const filteredData = table.getFilteredRowModel().rows.map(row => row.original);
+    
+    // Preparar los datos para la exportación
+    const exportData = filteredData.map((factura) => ({
+      "N° Factura": factura.numeroFactura,
+      "Cliente": factura.nombre,
+      "Identificación": factura.identificacion,
+      "Email": factura.correo,
+      "Valor Total": factura.valor,
+      "Tipo de Pago": factura.tipoPago,
+      "Fecha Creación": factura.fechaCreacion ? new Date(factura.fechaCreacion).toLocaleDateString('es-ES') : "",
+      "Observaciones": factura.observaciones || "",
+      "Cantidad de Items": factura.items?.length || 0,
+      "Items Detalle": factura.items?.map(item => 
+        `${item.nombre} (Cant: ${item.cantidad}, Precio: $${Number(item.precioUnitario).toLocaleString()})`
+      ).join("; ") || "",
+    }));
+
+    // Crear el libro de trabajo
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Facturas");
+
+    // Ajustar el ancho de las columnas para mejor legibilidad
+    const colWidths = [
+      { wch: 15 }, // N° Factura
+      { wch: 25 }, // Cliente
+      { wch: 15 }, // Identificación
+      { wch: 35 }, // Email
+      { wch: 15 }, // Valor Total
+      { wch: 15 }, // Tipo de Pago
+      { wch: 15 }, // Fecha Creación
+      { wch: 30 }, // Observaciones
+      { wch: 10 }, // Cantidad de Items
+      { wch: 60 }, // Items Detalle
+    ];
+    ws["!cols"] = colWidths;
+
+    // Agregar estilos al encabezado
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+      if (!ws[cellAddress]) continue;
+      ws[cellAddress].s = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: "EEEEEE" } }
+      };
+    }
+
+    // Generar el nombre del archivo con fecha y hora actual
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split('T')[0];
+    const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, '-');
+    const nombreArchivo = `facturas_${fecha}_${hora}.xlsx`;
+
+    // Descargar el archivo
+    XLSX.writeFile(wb, nombreArchivo);
+    
+    // Mostrar mensaje de confirmación (opcional)
+    console.log(`Exportando ${exportData.length} facturas a Excel...`);
+  };
+
   const table = useReactTable({
     data: facturas,
     columns,
@@ -143,9 +209,32 @@ const FacturasTable = ({ facturas }) => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Lista de Facturas
           </h3>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            Total: {facturas.length} facturas
-          </span>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={exportToExcel}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-2 shadow-sm"
+              title="Exportar tabla a Excel"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span>Exportar a Excel</span>
+            </button>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Total: {facturas.length} facturas
+            </span>
+          </div>
         </div>
       </div>
 
