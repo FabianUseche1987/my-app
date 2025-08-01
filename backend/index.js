@@ -9,7 +9,7 @@ import Factura from "./model/Factura.js";
 dotenv.config();
 //docker start mongo-db
 
-const MONGO_URI = 'mongodb://admin:admin123@localhost:27017/?authSource=admin';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://admin:admin123@localhost:27017/?authSource=admin';
 
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,

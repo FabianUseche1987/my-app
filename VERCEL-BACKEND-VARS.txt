@@ -1,0 +1,17 @@
+VARIABLES DE ENTORNO PARA EL BACKEND EN VERCEL
+==============================================
+
+Copiar y pegar exactamente estas variables:
+
+Variable 1:
+Name: MONGODB_URI
+Value: mongodb+srv://fabianusecherueda:Sw0rdfish2910@cluster0.jethmqk.mongodb.net/my-app?retryWrites=true&w=majority&appName=Cluster0
+
+Variable 2:
+Name: NODE_ENV
+Value: production
+
+IMPORTANTE: 
+- No agregar espacios extras
+- Copiar la cadena completa de MONGODB_URI
+- Verificar que diga "my-app" en la cadena (nombre de tu base de datos)

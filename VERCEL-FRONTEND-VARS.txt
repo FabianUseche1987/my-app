@@ -1,0 +1,17 @@
+VARIABLES DE ENTORNO PARA EL FRONTEND EN VERCEL
+================================================
+
+Una vez que tengas la URL del backend, usar esta variable:
+
+Variable 1:
+Name: VITE_API_URL
+Value: [PEGAR-AQUI-LA-URL-DE-TU-BACKEND]
+
+Ejemplo:
+Si tu backend quedó en: https://my-app-backend-abc123.vercel.app
+Entonces poner: https://my-app-backend-abc123.vercel.app
+
+IMPORTANTE:
+- Sin slash (/) al final
+- Debe ser la URL exacta que te dio Vercel para el backend
+- Empezar con https://
